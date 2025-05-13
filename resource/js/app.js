@@ -1,25 +1,29 @@
+import { assistants, Assistant } from './Assistant.js';
+
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
 
-// Assistant 배열
-const assistants = [new WeatherAssistant('날씨봇'), new FoodAssistant('맛집봇')];
+const DEFAULT_RESPONSE = Assistant.DEFAULT_RESPONSE; //기본 응답 메시지
 
 // 사용자 입력 처리
 function submitInput() {
-    const inputValue = userInput.value.trim();
+    const inputValue = userInput.value.trim(); //공백제거
     if (!inputValue) return;
 
     // 사용자 메시지 화면 출력
     printMessage('user', inputValue);
     userInput.value = ''; // 초기화
 
+    const command = inputValue.split('/')[0];
+    const keyword = inputValue.split('/')[1] || '';
+
     // 비서들에게 명령어 전달
-    let response = new Assistant().respond(); // 모든 비서가 이해 못 할 경우 응답
+    let response = DEFAULT_RESPONSE; // 모든 비서가 이해 못 할 경우 응답
     for (let i = 0; i < assistants.length; i++) {
-        const res = assistants[i].respond(inputValue);
+        const res = assistants[i].respond(command, keyword);
         console.log(`[${assistants[i].name} 응답]: ${res}`);
 
-        if (res !== new Assistant().respond()) {
+        if (res !== DEFAULT_RESPONSE) {
             response = res;
             break;
         }
@@ -42,3 +46,13 @@ function printMessage(type, message) {
     // 최신 메시지가 보이도록 스크롤 아래로 이동
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
+function init() {
+    // 전송버튼 클릭 시
+    document.getElementById('submit-btn').addEventListener('click', submitInput);
+    userInput.addEventListener('keydown', e => {
+        if (e.key == 'Enter') submitInput();
+    });
+}
+
+addEventListener('load', init);
