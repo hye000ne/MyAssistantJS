@@ -1,0 +1,68 @@
+/* 전체 페이지 */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* 전체 컨테이너 */
+#app {
+    width: 400px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 채팅 내용 영역 */
+#chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* 말풍선 공통 스타일 */
+.bot,
+.user {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 80%;
+}
+
+/* 봇 말풍선 스타일 */
+.bot {
+    background-color: #e3f2fd;
+    align-self: flex-start; /* 왼쪽 정렬 */
+}
+
+/* 사용자 말풍선 스타일 */
+.user {
+    background-color: #c8e6c9;
+    align-self: flex-end; /* 오른 쪽 정렬 */
+    text-align: right;
+}
+
+#input-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+#user-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px;
+    font-size: 16px;
+}
