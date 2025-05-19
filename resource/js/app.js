@@ -1,12 +1,16 @@
-import { assistants, Assistant } from './Assistant.js';
-
-const userInput = document.getElementById('user-input');
-const chatBox = document.getElementById('chat-box');
-
+const FIRST_RESPONSE = Assistant.FIRST_RESPONSE; //초기 인사 메시지
 const DEFAULT_RESPONSE = Assistant.DEFAULT_RESPONSE; //기본 응답 메시지
 
+let userInput;
+let chatBox;
+let currentAssistant = null;
+
+function setCurrentAssistant(bot) {
+    currentAssistant = bot;
+}
+
 // 사용자 입력 처리
-function submitInput() {
+async function submitInput() {
     const inputValue = userInput.value.trim(); //공백제거
     if (!inputValue) return;
 
@@ -14,16 +18,18 @@ function submitInput() {
     printMessage('user', inputValue);
     userInput.value = ''; // 초기화
 
-    const command = inputValue.split('/')[0];
-    const keyword = inputValue.split('/')[1] || '';
+    const command = inputValue.split('/')[0].trim();
+    const keyword = (inputValue.split('/')[1] || '').trim();
 
     // 비서들에게 명령어 전달
     let response = DEFAULT_RESPONSE; // 모든 비서가 이해 못 할 경우 응답
+
     for (let i = 0; i < assistants.length; i++) {
-        const res = assistants[i].respond(command, keyword);
+        const res = await assistants[i].respond(command, keyword);
         console.log(`[${assistants[i].name} 응답]: ${res}`);
 
         if (res !== DEFAULT_RESPONSE) {
+            setCurrentAssistant(assistants[i].name);
             response = res;
             break;
         }
@@ -48,8 +54,10 @@ function printMessage(type, message) {
 }
 
 function init() {
-    // 전송버튼 클릭 시
-    document.getElementById('submit-btn').addEventListener('click', submitInput);
+    userInput = document.getElementById('user-input');
+    chatBox = document.getElementById('chat-box');
+
+    printMessage('bot', FIRST_RESPONSE);
     userInput.addEventListener('keydown', e => {
         if (e.key == 'Enter') submitInput();
     });
