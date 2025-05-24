@@ -13,14 +13,17 @@ async function submitInput() {
     printMsg('user', inputValue);
     userInput.value = '';
 
-    const command = inputValue.split('/')[0].trim();
-    const keyword = (inputValue.split('/')[1] || '').trim();
+    const parts = inputValue.split('/');
+    for (let i = 0; i < parts.length; i++) parts[i] = parts[i].trim();
+    const command = parts[0];
+    const arg = parts[1] || '';
+    const arg2 = parts[2] || '';
 
     // 비서들에게 명령어 전달
     let response = DEFAULT_RESPONSE; // 모든 비서가 이해 못 할 경우 응답
 
     for (let i = 0; i < assistants.length; i++) {
-        const res = await assistants[i].respond(command, keyword);
+        const res = await assistants[i].respond(command, arg, arg2);
         console.log(`[${assistants[i].name} 응답]: ${res}`);
 
         if (res !== DEFAULT_RESPONSE) {
