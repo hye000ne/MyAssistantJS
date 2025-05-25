@@ -4,8 +4,8 @@ class Assistant {
         this.name = name;
     }
 
-    static INIT_MSG = `안녕하세요! 궁금한 게 있으시면 말해보세요 😊\n 처음이라면 아래처럼 입력해보세요: \n [날씨 / 맛집 / 번역 / 계산]`;
-    static DEFAULT_RESPONSE = '죄송해요, 이해하지 못했어요 😢';
+    static INIT_MSG = `안녕하세요! 궁금한 게 있으시면 말해보세요 😊\n처음이라면 이렇게 입력해보세요:\n예) 날씨 / 서울\n[날씨 / 번역 / 계산 / 선택]`;
+    static DEFAULT_RESPONSE = '앗, 무슨 말인지 잘 모르겠어요 🤔 다시 말해볼까요?';
 
     respond() {
         return Assistant.DEFAULT_RESPONSE;
@@ -77,16 +77,18 @@ class CalcAssistant extends Assistant {
     }
 }
 
-// 맛집 Assistant
-class FoodAssistant extends Assistant {
+// 선택 Assistant
+class PickAssistant extends Assistant {
     respond(command, arg) {
-        if (command == '맛집') {
-            if (arg == '강남') return "🍖 강남에 삼겹살 맛집 '돈돈'이 있어요 !";
-            if (arg == '홍대') return "🍣 홍대에 초밥 맛집 '스시야미'이 있어요 !";
-            return `${arg}의 맛집 정보는 아직 없어요.`;
-        }
+        if (command !== '선택') return super.respond();
+        if (!arg) return `항목들을 쉼표로 나눠서 적어주세요. 대신 골라드릴게요! 예: 선택 / 치킨, 피자, 햄버거`;
 
-        return super.respond(command);
+        let items = arg.split(',').map(x => x.trim()).filter(x => x);
+        if (items.length === 0) return `⚠️ 입력된 항목이 비어있어요. 다시 한 번 확인해 주세요!`;
+        if (items.length === 1) return `😵 항목이 하나뿐이에요. 두 개 이상 입력해 주세요.`;
+        let idx = Math.floor(Math.random() * items.length);
+
+        return `🧐 제 선택은 바로 ${items[idx]} 입니다!`;
     }
 }
 
@@ -122,7 +124,7 @@ const CITY_MAP = {
 // 전역 배열로 비서들 등록
 const assistants = [
     new WeatherAPIAssistant('날씨봇'),
-    new FoodAssistant('맛집봇'),
     new CalcAssistant('계산봇'),
-    new TranslateAssistant('번역봇')
+    new TranslateAssistant('번역봇'),
+    new PickAssistant('선택봇')
 ];
