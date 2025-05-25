@@ -4,7 +4,7 @@ class Assistant {
         this.name = name;
     }
 
-    static INIT_MSG = `안녕하세요! 궁금한 게 있으시면 말해보세요 😊\n 처음이라면 아래처럼 입력해보세요: \n 형식 / [날씨 / 맛집 / 번역 / 계산]`;
+    static INIT_MSG = `안녕하세요! 궁금한 게 있으시면 말해보세요 😊\n 처음이라면 아래처럼 입력해보세요: \n [날씨 / 맛집 / 번역 / 계산]`;
     static DEFAULT_RESPONSE = '죄송해요, 이해하지 못했어요 😢';
 
     respond() {
@@ -12,27 +12,11 @@ class Assistant {
     }
 }
 
-// 정보 Assistant
-class InfoAssistant extends Assistant {
-    respond(command, arg) {
-        if (command !== '형식') return super.respond();
-
-        switch (arg) {
-            case '날씨':
-                return `날씨 정보를 보려면 이렇게 입력해 주세요:\n예: 날씨 / 서울, 날씨 / 서울 / 옷차림`;
-            case '맛집':
-                return `맛집 정보를 보려면 이렇게 입력해 주세요:\n예: 맛집 / 강남`;
-            default:
-                return `형식을 알고 싶은 주제를 알려주세요 😊 (예: 형식 / [날씨 / 맛집 / 번역 / 계산])`;
-        }
-    }
-}
-
 // 날씨 Assistant (API)
 class WeatherAPIAssistant extends Assistant {
     async respond(command, arg, arg2) {
         if (command !== '날씨') return super.respond();
-
+        if (!arg) return `도시명을 같이 적어주세요.\n예: 날씨 / 서울\n옵션) 날씨 / 서울 / 옷차림`;
         const mapped = CITY_MAP[arg] || arg;
         const city = encodeURIComponent(mapped);
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
@@ -56,10 +40,10 @@ class WeatherAPIAssistant extends Assistant {
             } else if (data.cod == 404) {
                 return `⚠️ ${arg} 날씨 정보를 찾을 수 없어요. 영문이나 다른 도시명을 시도해 보세요.`;
             } else {
-                return '😵 서버 오류로 날씨 데이터를 가져오지 못했어요. 잠시 후 다시 시도해 주세요.';
+                return `😵 서버 오류로 날씨 데이터를 가져오지 못했어요. 잠시 후 다시 시도해 주세요.`;
             }
         } catch (e) {
-            return '😵 날씨 정보를 가져오는 데 문제가 발생했어요.';
+            return `😵 날씨 정보를 가져오는 데 문제가 발생했어요.`;
         }
     }
 }
@@ -68,6 +52,7 @@ class WeatherAPIAssistant extends Assistant {
 class TranslateAssistant extends Assistant {
     async respond(command, arg) {
         if (command !== '번역') return super.respond();
+        if (!arg) return `번역할 문장을 붙여주세요.\n번역 / Hello, world`;
     }
 }
 
@@ -75,18 +60,17 @@ class TranslateAssistant extends Assistant {
 class CalcAssistant extends Assistant {
     respond(command, arg) {
         if (command !== '계산') return super.respond();
-        const expr = arg.trim();
-        if (!expr) return `계산할 수식을 입력해 주세요. 예: 계산 / 3+4`;
+        if (!arg) return `계산할 수식을 입력해 주세요.\n예: 계산 / 3+4`;
 
-        const isValid = /^[0-9+\-*/().\s]+$/.test(expr);
+        const isValid = /^[0-9+\-*/().\s]+$/.test(arg);
         if (!isValid) return `❌ 허용되지 않은 문자가 있어요. 숫자와 사칙연산 기호만 써주세요.`;
 
         try {
-            let result = new Function('return ' + expr)();
+            let result = new Function('return ' + arg)();
             if (!isFinite(result)) return `❌ 0으로는 나눌 수 없어요.`;
 
             result = Number(result.toFixed(4)); // 소숫점 4자리
-            return `🧮 계산 결과: ${expr} = ${result}`;
+            return `🧮 계산 결과: ${arg} = ${result}`;
         } catch (e) {
             return `⚠️ 수식을 계산할 수 없어요. 괄호나 연산자를 확인해 보세요.`;
         }
@@ -137,8 +121,8 @@ const CITY_MAP = {
 
 // 전역 배열로 비서들 등록
 const assistants = [
-    new InfoAssistant('안내봇'),
     new WeatherAPIAssistant('날씨봇'),
     new FoodAssistant('맛집봇'),
-    new CalcAssistant('계산봇')
+    new CalcAssistant('계산봇'),
+    new TranslateAssistant('번역봇')
 ];
