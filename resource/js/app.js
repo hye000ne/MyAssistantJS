@@ -1,5 +1,6 @@
 const INIT_MSG = Assistant.INIT_MSG; // 초기 인사 메시지
 const DEFAULT_RESPONSE = Assistant.DEFAULT_RESPONSE; // 기본 응답 메시지('죄송해요, 이해하지 못했어요 😢')
+const user = localStorage.getItem("username");
 
 let userInput;
 let chatBox;
