@@ -41,9 +41,23 @@ async function submitInput() {
 
 // 화면 채팅창에 메시지 출력
 function printMsg(type, message) {
-    const msg = document.createElement("div");
-    msg.className = type; // [user, bot]
-    msg.innerText = (type == "user" ? "👤" : "🤖") + message;
+    let msg;
+    if(type === "bot") {
+        msg = document.createElement("div");
+        const img = document.createElement("img");
+        const bubble = document.createElement("div");
+        msg.className = "msg-row";
+        img.className = "avatar";
+        bubble.className = "bubble";
+
+        bubble.innerText = message;
+        msg.appendChild(img);
+        msg.appendChild(bubble);
+    } else {
+        msg = document.createElement("div");
+        msg.className = "user";
+        msg.innerText = "👤" + message;
+    }
 
     chatBox.appendChild(msg);
 
