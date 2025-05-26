@@ -1,23 +1,91 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>비서 챗봇</title>
-        <link rel="stylesheet" href="../resource/css/style.css" />
+<html lang="ko">
 
-        <script src="../resource/js/config.js"></script>
-        <script src="../resource/js/Assistant.js"></script>
-        <script src="../resource/js/app.js"></script>
-    </head>
-    <body>
-        <div id="app">
-            <div id="chat-box"></div>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>나만의 비서 챗봇</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fdfdfd;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-            <div id="input-area">
-                <input type="text" id="user-input" placeholder="궁금한 걸 물어보세요. " />
-                <button id="submit-btn" onclick="submitInput()">전송</button>
-            </div>
-        </div>
-    </body>
+        #intro-container {
+            padding: 40px;
+            background: #fff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #intro-container h1 {
+            margin-bottom: 20px;
+        }
+
+        #intro-container p {
+            margin: 10px 0;
+        }
+
+        #username {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #start-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #start-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script>
+        function submitInput() {
+            const name = document.getElementById("username").value.trim();
+            if (!name) {
+                alert("이름을 입력해주세요!");
+                return;
+            }
+
+            // 로컬스토리지로 이름 전달
+            localStorage.setItem("username", name);
+
+            window.location.href = "./main.html";
+        }
+
+        addEventListener("load", () => {
+            document.getElementById("username").addEventListener("keydown", (e) => {
+                if (e.key == 'Enter') submitInput();
+            });
+        })
+    </script>
+</head>
+
+<body>
+    <div id="intro-container">
+        <h1>나만의 비서 챗봇에 오신 걸 환영해요!</h1>
+        <p>🤖 주인님 ! 이름을 알려주세요</p>
+        <input type="text" id="username" placeholder="이름을 입력하세요" />
+        <button id="start-btn" onclick="submitInput()">시작하기</button>
+    </div>
+
+</body>
+
 </html>
