@@ -10,20 +10,20 @@ async function submitInput() {
     if (!inputValue) return;
 
     // 사용자 메시지 화면 출력 후 입력box 초기화
-    printMsg('user', inputValue);
-    userInput.value = '';
+    printMsg("user", inputValue);
+    userInput.value = "";
 
-    const parts = inputValue.split('/');
-    for (let i = 0; i < parts.length; i++) parts[i] = parts[i].trim();
+    const parts = inputValue.split("/").map((x) => x.trim());
     const command = parts[0];
-    const arg = parts[1] || '';
-    const arg2 = parts[2] || '';
+    const arg = parts[1] || "";
+    const arg2 = parts[2] || "";
+    const arg3 = parts[3] || "";
 
     // 비서들에게 명령어 전달
     let response = DEFAULT_RESPONSE; // 모든 비서가 이해 못 할 경우 응답
 
     for (let i = 0; i < assistants.length; i++) {
-        const res = await assistants[i].respond(command, arg, arg2);
+        const res = await assistants[i].respond(command, arg, arg2, arg3);
         console.log(`[${assistants[i].name} 응답]: ${res}`);
 
         if (res !== DEFAULT_RESPONSE) {
@@ -34,15 +34,15 @@ async function submitInput() {
 
     // 응답 출력
     setTimeout(() => {
-        printMsg('bot', response);
+        printMsg("bot", response);
     }, 300);
 }
 
 // 화면 채팅창에 메시지 출력
 function printMsg(type, message) {
-    const msg = document.createElement('div');
+    const msg = document.createElement("div");
     msg.className = type; // [user, bot]
-    msg.innerText = (type == 'user' ? '👤' : '🤖') + message;
+    msg.innerText = (type == "user" ? "👤" : "🤖") + message;
 
     chatBox.appendChild(msg);
 
@@ -51,13 +51,13 @@ function printMsg(type, message) {
 }
 
 function init() {
-    userInput = document.getElementById('user-input');
-    chatBox = document.getElementById('chat-box');
+    userInput = document.getElementById("user-input");
+    chatBox = document.getElementById("chat-box");
 
-    printMsg('bot', INIT_MSG);
-    userInput.addEventListener('keydown', e => {
-        if (e.key == 'Enter') submitInput();
+    printMsg("bot", INIT_MSG);
+    userInput.addEventListener("keydown", (e) => {
+        if (e.key == "Enter") submitInput();
     });
 }
 
-addEventListener('load', init);
+addEventListener("load", init);
