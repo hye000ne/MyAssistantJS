@@ -1,91 +1,103 @@
 <!DOCTYPE html>
 <html lang="ko">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>나만의 비서 챗봇</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #fdfdfd;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        #intro-container {
-            padding: 40px;
-            background: #fff;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        #intro-container h1 {
-            margin-bottom: 20px;
-        }
-
-        #intro-container p {
-            margin: 10px 0;
-        }
-
-        #username {
-            padding: 10px;
-            font-size: 16px;
-            width: 200px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        #start-btn {
-            padding: 12px 24px;
-            font-size: 16px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        #start-btn:hover {
-            background-color: #45a049;
-        }
-    </style>
-    <script>
-        function submitInput() {
-            const name = document.getElementById("username").value.trim();
-            if (!name) {
-                alert("이름을 입력해주세요!");
-                return;
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>나만의 비서 챗봇</title>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f7fa;
+                margin: 0;
+                padding: 0;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
 
-            // 로컬스토리지로 이름 전달
-            localStorage.setItem("username", name);
+            #intro-container {
+                width: 420px;
+                padding: 36px 30px;
+                background: #ffffff;
+                border-radius: 16px;
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
+                text-align: center;
+                border: 1px solid #ddd;
+            }
 
-            window.location.href = "./main.html";
-        }
+            #intro-container h1 {
+                font-size: 24px;
+                margin-bottom: 14px;
+                color: #222;
+            }
 
-        addEventListener("load", () => {
-            document.getElementById("username").addEventListener("keydown", (e) => {
-                if (e.key == 'Enter') submitInput();
+            #intro-container p {
+                font-size: 16px;
+                color: #555;
+                margin: 14px 0 24px;
+            }
+
+            #username {
+                width: 80%;
+                max-width: 260px;
+                padding: 12px 14px;
+                font-size: 16px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                outline: none;
+                margin-bottom: 20px;
+            }
+
+            #username:focus {
+                border-color: #64b5f6;
+                box-shadow: 0 0 4px rgba(100, 181, 246, 0.3);
+            }
+
+            #start-btn {
+                padding: 12px 20px;
+                font-size: 15px;
+                background-color: #64b5f6;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background-color 0.2s ease-in-out;
+            }
+
+            #start-btn:hover {
+                background-color: #42a5f5;
+            }
+        </style>
+
+        <script>
+            function submitInput() {
+                const name = document.getElementById('username').value.trim();
+                if (!name) {
+                    alert('이름을 입력해주세요!');
+                    return;
+                }
+                localStorage.setItem('username', name);
+                window.location.href = './main.html';
+            }
+
+            window.addEventListener('load', () => {
+                const input = document.getElementById('username');
+                input.focus();
+                input.addEventListener('keydown', e => {
+                    if (e.key === 'Enter') submitInput();
+                });
             });
-        })
-    </script>
-</head>
+        </script>
+    </head>
 
-<body>
-    <div id="intro-container">
-        <h1>나만의 비서 챗봇에 오신 걸 환영해요!</h1>
-        <p>🤖 주인님 ! 이름을 알려주세요</p>
-        <input type="text" id="username" placeholder="이름을 입력하세요" />
-        <button id="start-btn" onclick="submitInput()">시작하기</button>
-    </div>
-
-</body>
-
+    <body>
+        <div id="intro-container">
+            <h1>나만의 비서 챗봇에 오신 걸 환영해요!</h1>
+            <p>🤖 주인님! 이름을 알려주세요</p>
+            <input type="text" id="username" placeholder="이름을 입력하세요" />
+            <br />
+            <button id="start-btn" onclick="submitInput()">시작하기</button>
+        </div>
+    </body>
 </html>
