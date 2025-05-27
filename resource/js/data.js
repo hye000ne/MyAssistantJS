@@ -1,3 +1,5 @@
+const user = localStorage.getItem("username").toUpperCase(); //사용자 이름
+
 const CITY_MAP = {
     서울: "Seoul",
     부산: "Busan",
