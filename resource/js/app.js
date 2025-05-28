@@ -1,7 +1,5 @@
-const INIT_MSG = Assistant.INIT_MSG; // 초기 인사 메시지
-const ADMIN_INIT_MSG = Assistant.ADMIN_INIT_MSG; // 초기 인사 메시지
 const DEFAULT_RESPONSE = Assistant.DEFAULT_RESPONSE; // 기본 응답 메시지('죄송해요, 이해하지 못했어요 😢')
-
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 let userInput;
 let chatBox;
 
@@ -9,7 +7,7 @@ let chatBox;
 async function submitInput() {
     const inputValue = userInput.value.trim();
     if (!inputValue) return;
-    if (userInput.disabled) return; //로딩 중 입력 제어어
+    if (userInput.disabled) return; //로딩 중 입력 제어
     userInput.disabled = true;
 
     // 사용자 메시지 화면 출력 후 입력box 초기화
@@ -18,38 +16,45 @@ async function submitInput() {
 
     const parts = inputValue.split('/').map(x => x.trim());
     const command = parts[0];
-    const arg = parts[1] || '';
-    const arg2 = parts[2] || '';
-    const arg3 = parts[3] || '';
-
+    let arg = '';
+    let arg2 = '';
+    let arg3 = '';
+    if (command === '계산') {
+        arg = parts.slice(1).join('/'); // 계산은 1개 문자열로만 처리
+    } else {
+        arg = parts[1] || '';
+        arg2 = parts[2] || '';
+        arg3 = parts[3] || '';
+    }
     if (command === '나가기') {
         return (window.location.href = '../../public/index.html');
     }
 
-    let response = DEFAULT_RESPONSE;
+    let response = MESSAGE.DEFAULT_RESPONSE;
     // 관리자
     if (user === 'ADMIN') {
         adminBot = new AdminAssistant('admin_bot');
         const res = await adminBot.respond(command, arg, arg2);
-        if (res !== DEFAULT_RESPONSE) {
+        if (res !== MESSAGE.DEFAULT_RESPONSE) {
             response = res;
         }
 
         await delay(200);
         printMsg('bot', response, 'admin_bot');
+        userInput.disabled = false;
+        userInput.focus();
         return;
     }
 
     // 일반 사용자
     let avatar;
     const loadingEl = printLoadingMsg(); // 비서 대답이 오기 전까지 로딩메시지 출력
-    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     await delay(800); // 로딩 보여주는 시간 확보
 
     // 비서 응답 탐색
     for (let i = 0; i < assistants.length; i++) {
         const res = await assistants[i].respond(command, arg, arg2, arg3);
-        if (res !== DEFAULT_RESPONSE) {
+        if (res !== MESSAGE.DEFAULT_RESPONSE) {
             response = res;
             avatar = assistants[i].name;
             break;
@@ -58,11 +63,8 @@ async function submitInput() {
 
     loadingEl.style.visibility = 'hidden';
     loadingEl.style.height = `${loadingEl.offsetHeight}px`; // 공간 유지
-
     await delay(300); // 약간 텀 준 후
-
     printMsg('bot', response, avatar); // 응답 출력
-
     // 응답 출력 후 완전 제거
     loadingEl.remove();
     userInput.disabled = false;
@@ -132,13 +134,14 @@ function printLoadingMsg() {
 function init() {
     userInput = document.getElementById('user-input');
     chatBox = document.getElementById('chat-box');
+    userInput.focus();
 
     if (user === 'ADMIN') {
         userInput.placeholder = '등록할 단어를 입력하세요.';
-        printMsg('bot', ADMIN_INIT_MSG, 'admin_bot');
+        printMsg('bot', MESSAGE.ADMIN_INIT, 'admin_bot');
     } else {
         userInput.placeholder = '궁금한 걸 물어보세요.';
-        printMsg('bot', INIT_MSG, 'default_bot');
+        printMsg('bot', MESSAGE.INIT, 'default_bot');
     }
 
     userInput.addEventListener('keydown', e => {

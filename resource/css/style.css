@@ -12,8 +12,8 @@ body {
 
 /* 전체 컨테이너 */
 #app {
-    width: 620px;
-    height: 760px;
+    width: 700px;
+    height: 850px;
     padding: 12px;
     background: white;
     border-radius: 20px;
@@ -42,7 +42,7 @@ body {
 /* 채팅창 */
 #chat-box {
     flex: 1;
-    padding: 12px 16px;
+    padding: 20px 24px;
     overflow-y: auto;
     scroll-behavior: smooth;
     background-color: #fdfdfd;
@@ -52,7 +52,7 @@ body {
 .msg-row {
     display: flex;
     align-items: flex-start;
-    margin: 12px 0;
+    margin: 16px 0;
 }
 
 /* 봇 아바타 */
@@ -91,31 +91,40 @@ body {
     word-break: break-word;
 }
 
-/* 입력 영역 */
+/* 박스 모델 통일: padding과 border 포함 */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* 입력 영역 컨테이너 */
 #input-area {
     display: flex;
     align-items: center;
-    padding: 10px 12px;
+    gap: 12px;
+    padding: 12px;
     border-top: 1px solid #ddd;
     background-color: #f9fbfd;
-    gap: 10px;
 }
 
 /* 입력 필드 */
 #user-input {
     flex: 1;
-    padding: 10px 14px;
-    font-size: 15px;
-    height: 42px;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 18px;
+    font-size: 17px;
     border: 1px solid #ccc;
     border-radius: 16px;
-    outline: none;
-    background-color: #ffffff;
+    background-color: #fff;
     color: #222;
+    outline: none;
     caret-color: #333;
     transition: border 0.2s ease-in-out;
 }
 
+/* 포커스 시 효과 */
 #user-input:focus {
     border-color: #90caf9;
     box-shadow: 0 0 4px rgba(144, 202, 249, 0.5);
@@ -123,10 +132,10 @@ body {
 
 /* 전송 버튼 */
 button {
-    flex-shrink: 0;
-    padding: 0 20px;
-    height: 42px;
-    font-size: 15px;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 24px;
+    font-size: 16px;
     background-color: #64b5f6;
     color: white;
     border: none;
@@ -135,6 +144,7 @@ button {
     transition: background-color 0.2s ease-in-out;
 }
 
+/* 전송 버튼 hover */
 button:hover {
     background-color: #1e88e5;
 }

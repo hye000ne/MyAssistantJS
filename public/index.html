@@ -5,11 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>나만의 비서 챗봇</title>
         <style>
+            * {
+                box-sizing: border-box;
+            }
+
             body {
-                font-family: 'Arial', sans-serif;
-                background-color: #f4f7fa;
                 margin: 0;
                 padding: 0;
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f7fa;
                 height: 100vh;
                 display: flex;
                 justify-content: center;
@@ -17,56 +21,78 @@
             }
 
             #intro-container {
-                width: 420px;
-                padding: 36px 30px;
-                background: #ffffff;
-                border-radius: 16px;
-                box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
+                width: 100%;
+                max-width: 720px;
+                padding: 60px 50px;
+                background-color: #ffffff;
+                border-radius: 20px;
+                box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+                border: 1px solid #e0e0e0;
                 text-align: center;
-                border: 1px solid #ddd;
+                font-size: 18px;
             }
 
-            #intro-container h1 {
-                font-size: 24px;
-                margin-bottom: 14px;
+            h1 {
+                font-size: 28px;
+                font-weight: bold;
                 color: #222;
+                margin-bottom: 24px;
             }
 
-            #intro-container p {
-                font-size: 16px;
+            p {
+                font-size: 18px;
+                line-height: 1.8;
                 color: #555;
-                margin: 14px 0 24px;
+                margin-bottom: 36px;
             }
 
-            #username {
-                width: 80%;
-                max-width: 260px;
-                padding: 12px 14px;
-                font-size: 16px;
+            .input-group {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+                margin-top: 12px;
+            }
+
+            input[type='text'] {
+                flex: 1;
+                max-width: 300px;
+                padding: 14px 16px;
+                height: 48px;
+                font-size: 17px;
                 border: 1px solid #ccc;
-                border-radius: 8px;
+                border-radius: 10px;
                 outline: none;
-                margin-bottom: 20px;
+                background: #fff;
+                color: #333;
             }
 
-            #username:focus {
+            input[type='text']:focus {
                 border-color: #64b5f6;
-                box-shadow: 0 0 4px rgba(100, 181, 246, 0.3);
+                box-shadow: 0 0 6px rgba(100, 181, 246, 0.4);
             }
 
-            #start-btn {
-                padding: 12px 20px;
-                font-size: 15px;
+            button {
+                padding: 0 22px;
+                font-size: 17px;
+                height: 48px;
+                line-height: 48px;
                 background-color: #64b5f6;
                 color: white;
                 border: none;
-                border-radius: 8px;
+                border-radius: 10px;
                 cursor: pointer;
                 transition: background-color 0.2s ease-in-out;
             }
 
-            #start-btn:hover {
+            button:hover {
                 background-color: #42a5f5;
+            }
+
+            .note {
+                color: #888;
+                font-size: 15px;
+                margin-top: 12px;
+                display: block;
             }
         </style>
 
@@ -94,10 +120,18 @@
     <body>
         <div id="intro-container">
             <h1>나만의 비서 챗봇에 오신 걸 환영해요!</h1>
-            <p>🤖 주인님! 이름을 알려주세요</p>
-            <input type="text" id="username" placeholder="이름을 입력하세요" />
-            <br />
-            <button id="start-btn" onclick="submitInput()">시작하기</button>
+            <p>
+                🤖 주인님, 이름을 알려주세요 😊
+                <br />
+                챗봇이 인사를 하고 대화를 시작해요!
+                <br />
+                <span class="note">예시: 날씨 / 서울, 계산 / 3+7 등으로 질문할 수 있어요</span>
+            </p>
+
+            <div class="input-group">
+                <input type="text" id="username" placeholder="이름을 입력하세요" />
+                <button id="start-btn" onclick="submitInput()">시작하기</button>
+            </div>
         </div>
     </body>
 </html>
