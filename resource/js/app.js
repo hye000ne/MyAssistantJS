@@ -135,7 +135,7 @@ function init() {
 
     if (user === 'ADMIN') {
         userInput.placeholder = '등록할 단어를 입력하세요.';
-        printMsg('bot', ADMIN_INIT_MSG, 'default_bot');
+        printMsg('bot', ADMIN_INIT_MSG, 'admin_bot');
     } else {
         userInput.placeholder = '궁금한 걸 물어보세요.';
         printMsg('bot', INIT_MSG, 'default_bot');
