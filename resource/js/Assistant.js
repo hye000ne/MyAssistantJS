@@ -1,6 +1,6 @@
 // 기본 Assistant 클래스
 class Assistant {
-    constructor(name = 'default_bot') {
+    constructor(name = "default_bot") {
         this.name = name;
     }
 
@@ -13,15 +13,27 @@ class Assistant {
 // 관리자 Assistant
 class AdminAssistant extends Assistant {
     respond(command, arg, arg2) {
+        if (command === "목록") {
+            if (sessionStorage.length === 1) return `등록된 명령어가 없습니다. 등록 먼저 해주세요.`;
+            let str = `지금까지 저장된 명령어 목록입니다!\n`;
+            for (let idx = 0; idx < sessionStorage.length; idx++) {
+                const key = sessionStorage.key(idx);
+                const value = sessionStorage.getItem(key);
+                if (key === "IsThisFirstTime_Log_From_LiveServer") continue;
+                str += `${key} : ${value}\n`;
+            }
+            return str.trim();
+        }
+
         if (!command || !arg) return MESSAGE.ERRORS.INVALID_INPUT;
-        if (command === '등록' || command === '수정') {
+        if (command === "등록" || command === "수정") {
             if (!arg2) return MESSAGE.ERRORS.INVALID_INPUT;
-            if (command === '수정' || sessionStorage.getItem(arg) === null) return `앗! ${arg}는(은) 등록돼있지 않아요.`;
+            if (command === "수정" && sessionStorage.getItem(arg) === null) return `앗! ${arg}는(은) 등록돼있지 않아요.`;
 
             sessionStorage.setItem(arg, arg2);
             return `네! ${command}했습니다.\n이제 ${arg}(이)라고 입력하면 ${arg2}(이)라고 대답할 거에요!`;
         }
-        if (command === '삭제') {
+        if (command === "삭제") {
             if (sessionStorage.getItem(arg) === null) return `앗! ${arg}는(은) 등록돼있지 않아요.`;
 
             sessionStorage.removeItem(arg);
@@ -35,22 +47,22 @@ class AdminAssistant extends Assistant {
 // 날씨 Assistant (API)
 class WeatherAPIAssistant extends Assistant {
     async respond(command, arg, arg2) {
-        if (command !== '날씨') return super.respond();
+        if (command !== "날씨") return super.respond();
         if (!arg) return MESSAGE.HELP_TEXTS[command];
         const mapped = CITY_MAP[arg] || arg;
         const city = encodeURIComponent(mapped);
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
 
         try {
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
             const response = await fetch(url);
             const data = await response.json();
 
             if (data.cod === 200) {
                 const weather = data.weather[0].description;
                 const temp = data.main.temp;
-                let clothes = '';
+                let clothes = "";
 
-                if (arg2 === '옷차림') {
+                if (arg2 === "옷차림") {
                     clothes = getClothesForTemp(temp);
                     return MESSAGE.RESPONSES[command].CLOTHES(arg, weather, temp, clothes);
                 } else {
@@ -59,7 +71,7 @@ class WeatherAPIAssistant extends Assistant {
             }
 
             //에러 코드는 반환될 때 string값으로 옴
-            if (data.cod === '404') return MESSAGE.ERRORS.CITY_NAME_UNKNOWN;
+            if (data.cod === "404") return MESSAGE.ERRORS.CITY_NAME_UNKNOWN;
 
             return MESSAGE.ERRORS.SERVER_ERROR;
         } catch (e) {
@@ -70,21 +82,20 @@ class WeatherAPIAssistant extends Assistant {
 
 // 번역 Assistant (API)
 class TranslateAssistant extends Assistant {
-    async respond(command, arg, arg2, arg3) {
-        if (command !== '번역') return super.respond();
+    async respond(command, arg, arg2) {
+        if (command !== "번역") return super.respond();
         if (!arg) return MESSAGE.HELP_TEXTS[command];
-
-        const from = LANG_MAP[arg2] || 'auto';
-        const to = LANG_MAP[arg3] || 'en';
-        const txt = encodeURIComponent(arg);
-        const url = `https://lingva.ml/api/v1/${from}/${to}/${txt}`;
+        const to = LANG_MAP[arg2] || "en";
 
         try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${to}&dt=t&q=${encodeURIComponent(arg)}`;
             const response = await fetch(url);
-            const data = await response.json();
             if (!response.ok) return MESSAGE.ERRORS.SERVER_ERROR;
 
-            return MESSAGE.RESPONSES[command].RESULT(data.translation);
+            const data = await response.json();
+            const translation = data[0].map((item) => item[0]).join("");
+
+            return MESSAGE.RESPONSES[command].RESULT(translation);
         } catch (e) {
             return MESSAGE.ERRORS.SERVER_ERROR;
         }
@@ -94,14 +105,14 @@ class TranslateAssistant extends Assistant {
 // 계산 Assistant
 class CalcAssistant extends Assistant {
     respond(command, arg) {
-        if (command !== '계산') return super.respond();
+        if (command !== "계산") return super.respond();
         if (!arg) return MESSAGE.HELP_TEXTS[command];
 
         const isValid = /^[0-9+\-*/().\s]+$/.test(arg);
         if (!isValid) return MESSAGE.ERRORS.INVALID_EXPRESSION_FORMAT;
 
         try {
-            let result = new Function('return ' + arg)();
+            let result = new Function("return " + arg)();
             if (!isFinite(result)) return MESSAGE.ERRORS.DIVIDE_BY_ZERO;
 
             result = Number(result.toFixed(4)); // 소숫점 4자리
@@ -115,13 +126,13 @@ class CalcAssistant extends Assistant {
 // 선택 Assistant
 class PickAssistant extends Assistant {
     respond(command, arg) {
-        if (command !== '선택') return super.respond();
+        if (command !== "선택") return super.respond();
         if (!arg) return MESSAGE.HELP_TEXTS[command];
 
         let items = arg
-            .split(',')
-            .map(x => x.trim())
-            .filter(x => x);
+            .split(",")
+            .map((x) => x.trim())
+            .filter((x) => x);
         if (items.length === 0) return MESSAGE.ERRORS.INVALID_INPUT;
         if (items.length === 1) return MESSAGE.ERRORS.ONLY_ONE_OPTION;
         let idx = Math.floor(Math.random() * items.length);
@@ -133,7 +144,7 @@ class PickAssistant extends Assistant {
 class MBTIAssistant extends Assistant {
     respond(command, arg) {
         command = command.toUpperCase();
-        if (command !== 'MBTI') return super.respond();
+        if (command !== "MBTI") return super.respond();
         if (!arg) return MESSAGE.HELP_TEXTS[command];
         const mbti = arg.toUpperCase();
         const data = MBTI_DATA[mbti];
@@ -159,10 +170,10 @@ function getClothesForTemp(temp) {
 
 // 전역 배열로 비서들 등록
 const assistants = [
-    new Assistant('default_bot'),
-    new WeatherAPIAssistant('weather_bot'),
-    new CalcAssistant('calc_bot'),
-    new TranslateAssistant('translate_bot'),
-    new PickAssistant('pick_bot'),
-    new MBTIAssistant('mbti_bot')
+    new Assistant("default_bot"),
+    new WeatherAPIAssistant("weather_bot"),
+    new CalcAssistant("calc_bot"),
+    new TranslateAssistant("translate_bot"),
+    new PickAssistant("pick_bot"),
+    new MBTIAssistant("mbti_bot"),
 ];
