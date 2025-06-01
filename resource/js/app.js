@@ -1,37 +1,41 @@
 const DEFAULT_RESPONSE = Assistant.DEFAULT_RESPONSE; // 기본 응답 메시지('죄송해요, 이해하지 못했어요 😢')
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-let userInput;
-let chatBox;
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms)); // 비동기 지연 함수
+let userInput; // 사용자 입력창
+let chatBox; // 채팅창
 
 // 사용자 입력 처리
 async function submitInput() {
-    const inputValue = userInput.value.trim();
-    if (!inputValue) return;
+    const inputValue = userInput.value.trim(); // 입력값 앞뒤 공백 제거
+    if (!inputValue) return; // 입력값 없으면 리턴
     if (userInput.disabled) return; //로딩 중 입력 제어
     userInput.disabled = true;
 
-    // 사용자 메시지 화면 출력 후 입력box 초기화
+    // 사용자 메시지 화면 출력 + 입력창 초기화
     printMsg('user', inputValue);
     userInput.value = '';
 
-    const parts = inputValue.split('/').map(x => x.trim());
+    const parts = inputValue.split('/').map(x => x.trim()); // '/' 기준으로 입력 분리
     const command = parts[0];
     let arg = '';
     let arg2 = '';
     let arg3 = '';
+    // 계산 명령어는 수식 전체를 하나의 문자열로 다룸
     if (command === '계산') {
-        arg = parts.slice(1).join('/'); // 계산은 1개 문자열로만 처리
+        arg = parts.slice(1).join('/');
     } else {
         arg = parts[1] || '';
         arg2 = parts[2] || '';
         arg3 = parts[3] || '';
     }
+
+    // '나가기' 명령어 처리
     if (command === '나가기') {
         return (window.location.href = '../../public/index.html');
     }
 
     let response = MESSAGE.DEFAULT_RESPONSE;
-    // 관리자
+
+    // 관리자(Admin) 처리
     if (user === 'ADMIN') {
         adminBot = new AdminAssistant('admin_bot');
         const res = await adminBot.respond(command, arg, arg2);
@@ -39,39 +43,38 @@ async function submitInput() {
             response = res;
         }
 
-        await delay(200);
-        printMsg('bot', response, 'admin_bot');
-        userInput.disabled = false;
+        await delay(200); // 응답 텀 주기
+        printMsg('bot', response, 'admin_bot'); // 로딩 메시지 출력
+        userInput.disabled = false; // 입력창 활성화
         userInput.focus();
         return;
     }
 
     // 일반 사용자
     let avatar;
-    const loadingEl = printLoadingMsg(); // 비서 대답이 오기 전까지 로딩메시지 출력
-    await delay(800); // 로딩 보여주는 시간 확보
+    const loadingEl = printLoadingMsg(); // 로딩 메시지 출력
+    await delay(800); // 로딩 시간 확보
 
     // 비서 응답 탐색
     for (let i = 0; i < assistants.length; i++) {
         const res = await assistants[i].respond(command, arg, arg2, arg3);
         if (res !== MESSAGE.DEFAULT_RESPONSE) {
             response = res;
-            avatar = assistants[i].name;
+            avatar = assistants[i].name; // 해당 assistant의 avatar 설정
             break;
         }
     }
 
-    loadingEl.style.visibility = 'hidden';
-    loadingEl.style.height = `${loadingEl.offsetHeight}px`; // 공간 유지
-    await delay(300); // 약간 텀 준 후
-    printMsg('bot', response, avatar); // 응답 출력
-    // 응답 출력 후 완전 제거
-    loadingEl.remove();
-    userInput.disabled = false;
+    loadingEl.style.visibility = 'hidden'; // 로딩 메시지 숨기기
+    loadingEl.style.height = `${loadingEl.offsetHeight}px`; // 로딩 높이 유지
+    await delay(300); // 자연스러운 응답 딜레이
+    printMsg('bot', response, avatar); // 응답 메시지 출력
+    loadingEl.remove(); // 로딩 메시지 제거
+    userInput.disabled = false; // 입력창 활성화
     userInput.focus();
 }
 
-// 화면 채팅창에 메시지 출력
+// 채팅창에 메시지 출력
 function printMsg(type, message, avatar = 'default_bot') {
     let msg;
     if (type === 'bot') {
@@ -105,7 +108,7 @@ function printMsg(type, message, avatar = 'default_bot') {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// 화면 채팅창에 로딩 메시지(...) 출력
+// 로딩 메시지 출력
 function printLoadingMsg() {
     let msg = document.createElement('div');
     const img = document.createElement('img');

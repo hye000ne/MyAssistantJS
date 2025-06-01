@@ -4,7 +4,9 @@ class Assistant {
         this.name = name;
     }
 
+    // Assistant의 이름을 설정, 기본은 'default_bot'
     respond(command) {
+        // sessionStorage에 등록된 커스텀 명령어 응답 처리
         const result = sessionStorage.getItem(command);
         return result || MESSAGE.DEFAULT_RESPONSE;
     }
@@ -14,19 +16,21 @@ class Assistant {
 class AdminAssistant extends Assistant {
     respond(command, arg, arg2) {
         if (command === '목록') {
+            // 등록된 명령어 목록 조회
             if (sessionStorage.length === 1) return `등록된 명령어가 없습니다. 등록 먼저 해주세요.`;
             let str = `지금까지 저장된 명령어 목록입니다!\n`;
             for (let idx = 0; idx < sessionStorage.length; idx++) {
                 const key = sessionStorage.key(idx);
                 const value = sessionStorage.getItem(key);
-                if (key === 'IsThisFirstTime_Log_From_LiveServer') continue;
+                if (key === 'IsThisFirstTime_Log_From_LiveServer') continue; // Live Server의 기본키 제외
                 str += `${key} : ${value}\n`;
             }
             return str.trim();
         }
-
+        // 입력값 검증
         if (!command || !arg) return MESSAGE.ERRORS.INVALID_INPUT;
         if (command === '등록' || command === '수정') {
+            // 등록 또는 수정 시
             if (!arg2) return MESSAGE.ERRORS.INVALID_INPUT;
             if (command === '수정' && sessionStorage.getItem(arg) === null) return `앗! ${arg}는(은) 등록돼있지 않아요.`;
 
@@ -34,6 +38,7 @@ class AdminAssistant extends Assistant {
             return `네! ${command}했습니다.\n이제 ${arg}(이)라고 입력하면 ${arg2}(이)라고 대답할 거에요!`;
         }
         if (command === '삭제') {
+            // 삭제 시
             if (sessionStorage.getItem(arg) === null) return `앗! ${arg}는(은) 등록돼있지 않아요.`;
 
             sessionStorage.removeItem(arg);
@@ -53,6 +58,7 @@ class WeatherAPIAssistant extends Assistant {
         const city = encodeURIComponent(mapped);
 
         try {
+            // OpenWeather API 요청
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
             const response = await fetch(url);
             const data = await response.json();
@@ -63,6 +69,7 @@ class WeatherAPIAssistant extends Assistant {
                 let clothes = '';
 
                 if (arg2 === '옷차림') {
+                    // 옷차림 추천 요청 시
                     clothes = getClothesForTemp(temp);
                     return MESSAGE.RESPONSES[command].CLOTHES(arg, weather, temp, clothes);
                 } else {
